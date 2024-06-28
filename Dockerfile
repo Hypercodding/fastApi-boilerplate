@@ -25,4 +25,4 @@ COPY . .
 # Command to run the application
 
 # Command to run the application, using a default port if not provided
-CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port $PORT"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0"]
