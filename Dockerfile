@@ -1,28 +1,26 @@
-# Use an official Python 3.12 runtime as a parent image
+# Use the official Python image from the Docker Hub
 FROM python:3.12-slim
 
-# Set environment variables
-ENV POETRY_VERSION=1.3.1
+# Install necessary system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Poetry
-RUN python -m pip install --upgrade pip \
-    && pip install "poetry==$POETRY_VERSION"
+RUN pip install poetry
 
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the pyproject.toml and poetry.lock files to the working directory
-COPY pyproject.toml poetry.lock /app/
+# Copy only the necessary files for Poetry
+COPY pyproject.toml poetry.lock ./
 
 # Install dependencies
-RUN pip install poetry
-RUN poetry install --no-root
+RUN poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
-# Copy the rest of the application code to the working directory
-COPY . /app
-
-# Expose port 80
-EXPOSE 80
+# Copy the rest of the application code into the container
+COPY . .
 
 # Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
