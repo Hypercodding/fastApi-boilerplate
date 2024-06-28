@@ -23,4 +23,6 @@ RUN poetry config virtualenvs.create false && poetry install --no-interaction --
 COPY . .
 
 # Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# Command to run the application, using a default port if not provided
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
